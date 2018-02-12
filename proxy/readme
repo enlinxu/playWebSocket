@@ -1,0 +1,2 @@
+configuration for Apache httpd server.
+set up websocket proxy from httpd server to tomcat server. 
