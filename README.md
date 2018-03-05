@@ -27,7 +27,7 @@ go build
 # Access it via Httpd proxy
 
 ## set up the websocket proxy
-Add the following into the configuration for Apache Httpd(change the port 8080 if necessary).
+Add the following into the configuration for Apache Httpd(change the tomcat port 8080 if necessary).
 
 ```bash
 LoadModule proxy_module modules/mod_proxy.so
@@ -44,4 +44,10 @@ ProxyPass /echo/websocket/echoProgrammatic ws://localhost:8080/echo/websocket/ec
 ProxyPassReverse /echo/websocket/echoProgrammatic ws://localhost:8080/echo/websocket/echoProgrammatic
 </IfModule>
 ```
-
+## access the websocket via httpd proxy
+```terminal
+cd client
+go build
+./client --serverHost http://127.0.0.1:9191 --path /echo/websocket/echoAnnotation
+# 9191 is the port for apache httpd
+```
