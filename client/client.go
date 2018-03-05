@@ -105,7 +105,8 @@ func testEcho(conf *ConnectionConfig) {
 	defer wsocket.Close()
 
 	msgOut := []byte("hello world")
-	wsocket.WriteMessage(websocket.TextMessage, msgOut)
+	//wsocket.WriteMessage(websocket.TextMessage, msgOut)
+	wsocket.WriteMessage(websocket.BinaryMessage, msgOut)
 
 	msgtype, msgIn, err := wsocket.ReadMessage()
 	if err != nil {
@@ -113,6 +114,6 @@ func testEcho(conf *ConnectionConfig) {
 	}
 	fmt.Printf("Received msg type(%d): %v\n", msgtype, string(msgIn))
 
-	time.Sleep(time.Second * 12)
+	//time.Sleep(time.Second * 12)
 	wsocket.WriteMessage(websocket.CloseMessage, []byte(""))
 }
