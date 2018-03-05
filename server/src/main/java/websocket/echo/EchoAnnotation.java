@@ -19,6 +19,7 @@ package websocket.echo;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
+import java.nio.charset.Charset;
 
 import javax.websocket.OnMessage;
 import javax.websocket.OnClose;
@@ -52,12 +53,42 @@ public class EchoAnnotation {
         logger.warning("Annotated websocket is error.");
     }
 
+    protected String bigMsg(String seed) {
+        StringBuilder sb = new StringBuilder();
+        int baselen = seed.length() + 1;
+        int maxlen = 20240;
+        int current = 0;
+        while (current < maxlen) {
+            sb.append(seed);
+            sb.append(";");
+            current += baselen;
+        }
+        sb.append(current);
+
+        return sb.toString();
+    }
+
+    protected ByteBuffer bigBinary(ByteBuffer bb) {
+        String dat = "hello";
+        try {
+            dat = new String(bb.array());
+        } catch (Exception e) {
+            e.printStackTrace();
+            dat = "error";
+        }
+        String big = bigMsg(dat);
+
+        logger.info("binary dat: " + dat);
+        return ByteBuffer.wrap(big.getBytes(Charset.forName("UTF-8")));
+    }
+
     @OnMessage
     public void echoTextMessage(Session session, String msg, boolean last) {
         logger.info("Annotated websocket received text msg.");
 
         try {
             if (session.isOpen()) {
+                //session.getBasicRemote().sendText(bigMsg(msg), last);
                 session.getBasicRemote().sendText(msg, last);
             }
         } catch (IOException e) {
@@ -74,6 +105,7 @@ public class EchoAnnotation {
             boolean last) {
         try {
             if (session.isOpen()) {
+                //session.getBasicRemote().sendBinary(bigBinary(bb), last);
                 session.getBasicRemote().sendBinary(bb, last);
             }
         } catch (IOException e) {
