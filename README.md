@@ -47,7 +47,7 @@ ProxyPassReverse /echo/websocket/echoProgrammatic ws://localhost:8080/echo/webso
 ## access the websocket via httpd proxy
 ```terminal
 cd client
-go build
+# go build
 ./client --serverHost http://127.0.0.1:9191 --path /echo/websocket/echoAnnotation
 # 9191 is the port for apache httpd
 ```
