@@ -56,7 +56,7 @@ public class EchoAnnotation {
     protected String bigMsg(String seed) {
         StringBuilder sb = new StringBuilder();
         int baselen = seed.length() + 1;
-        int maxlen = 20240;
+        int maxlen = 1024;
         int current = 0;
         while (current < maxlen) {
             sb.append(seed);
@@ -80,6 +80,21 @@ public class EchoAnnotation {
 
         logger.info("binary dat: " + dat);
         return ByteBuffer.wrap(big.getBytes(Charset.forName("UTF-8")));
+    }
+
+    protected int chunkSend(Session session, ByteBuffer bb) throws IOException {
+        final int bufferSize = 256;
+        byte[] data = new byte[bufferSize];
+        logger.info("chunk sending, chunksize=" + bufferSize);
+
+        while (bb.remaining() > 0) {
+            logger.info("begin to send a chunk");
+            final int size = Math.min(bb.remaining(), bufferSize);
+            bb.get(data, 0, size);
+
+            session.getBasicRemote().sendBinary(ByteBuffer.wrap(data, 0, size), bb.remaining() == 0);
+        }
+        return 0;
     }
 
     @OnMessage
@@ -106,7 +121,8 @@ public class EchoAnnotation {
         try {
             if (session.isOpen()) {
                 //session.getBasicRemote().sendBinary(bigBinary(bb), last);
-                session.getBasicRemote().sendBinary(bb, last);
+                //session.getBasicRemote().sendBinary(bb, last);
+                chunkSend(session, bigBinary(bb));
             }
         } catch (IOException e) {
             try {
